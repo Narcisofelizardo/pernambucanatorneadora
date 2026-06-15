@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Financeiro | Pernambucana Centro de Manutenção</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <script src="auth-guard.js"></script>
+  <script src="data.js"></script>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="assets/logo-pernambucana.jpg" alt="Pernambucana Centro de Manutenção" />
+      <div>
+        <strong>Pernambucana</strong>
+        <span>Centro de Manutenção</span>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="#visao" class="active"><span>◈</span> Visão executiva</a>
+      <a href="#analises"><span>▣</span> Análises</a>
+      <a href="#rankings"><span>◇</span> Rankings</a>
+      <a href="#detalhes"><span>☰</span> Detalhamento</a>
+      <a href="index.html"><span>↗</span> Landing page</a>
+    </nav>
+    <button class="logout-btn" id="logoutBtn" type="button">Sair do painel</button>
+    <div class="side-card">
+      <small>Status da base</small>
+      <strong id="sideStatus">Dados carregados</strong>
+      <p id="sidePeriod">Janeiro a Junho/2026</p>
+    </div>
+    <div class="side-card muted-card">
+      <small>Próxima etapa</small>
+      <p>Depois conectamos esse mesmo layout na planilha do Google, Excel, CSV ou banco.</p>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="hero" id="visao">
+      <div class="hero-copy">
+        <div class="badge"><span></span> Dashboard executivo • modo apresentação</div>
+        <h1>Painel financeiro executivo para receitas, OS e compras de insumos.</h1>
+        <p>Visão gerencial da Pernambucana Centro de Manutenção para acompanhar faturamento, materiais comprados, resultado estimado, clientes, fornecedores, mecânicos e desempenho por área.</p>
+        <div class="hero-actions">
+          <button class="btn primary" id="btnPresentation">Modo apresentação</button>
+          <button class="btn ghost" id="btnExport">Exportar base filtrada</button>
+          <label class="btn soft file-btn">Importar JSON/CSV<input type="file" id="fileInput" accept=".json,.csv" /></label>
+        </div>
+      </div>
+      <div class="hero-panel glass">
+        <div class="hero-panel-top">
+          <div>
+            <span>Resultado estimado</span>
+            <strong id="heroProfit">R$ 0,00</strong>
+          </div>
+          <span id="heroMargin" class="pill good">0%</span>
+        </div>
+        <canvas id="chartHero"></canvas>
+        <div class="hero-mini">
+          <div><span>Receitas</span><strong id="heroRevenue">R$ 0,00</strong></div>
+          <div><span>Insumos</span><strong id="heroCost">R$ 0,00</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar glass">
+      <label>Mês<select id="monthFilter"><option value="all">Todos</option></select></label>
+      <label>Área<select id="areaFilter"><option value="all">Todas</option></select></label>
+      <label>Fluxo<select id="typeFilter"><option value="all">Todos</option><option value="Receita">Receitas</option><option value="Gasto">Compras/Insumos</option></select></label>
+      <label>Forma<select id="paymentFilter"><option value="all">Todas</option></select></label>
+      <label class="search">Busca<input id="searchInput" type="search" placeholder="Cliente, fornecedor, descrição, OS..." /></label>
+    </section>
+
+    <section class="kpis">
+      <article class="kpi glass"><span>Faturamento</span><strong id="kpiRevenue">R$ 0,00</strong><small id="kpiRevenueSub">Receitas / OS</small></article>
+      <article class="kpi glass"><span>Compras/Insumos</span><strong id="kpiCost">R$ 0,00</strong><small id="kpiCostSub">Materiais e insumos comprados</small></article>
+      <article class="kpi glass"><span>Resultado</span><strong id="kpiProfit">R$ 0,00</strong><small>Faturamento - insumos</small></article>
+      <article class="kpi glass"><span>Margem</span><strong id="kpiMargin">0%</strong><small>Resultado / faturamento</small></article>
+      <article class="kpi glass"><span>OS atendidas</span><strong id="kpiOs">0</strong><small>Ordens únicas</small></article>
+      <article class="kpi glass"><span>Ticket médio</span><strong id="kpiTicket">R$ 0,00</strong><small>Receita por OS</small></article>
+    </section>
+
+    <section class="insights glass">
+      <div class="section-title"><span>Insights automáticos</span><h2>O que a gerência precisa ver primeiro</h2></div>
+      <div class="insight-grid" id="insightsGrid"></div>
+    </section>
+
+    <section class="charts" id="analises">
+      <article class="card glass wide"><div class="card-head"><div><span>Evolução</span><h3>Faturamento x compras de insumos x resultado</h3></div><em>mensal</em></div><canvas id="chartMonthly"></canvas></article>
+      <article class="card glass"><div class="card-head"><div><span>Área</span><h3>Participação por área</h3></div></div><canvas id="chartArea"></canvas></article>
+      <article class="card glass"><div class="card-head"><div><span>Pagamento</span><h3>À vista x à prazo</h3></div></div><canvas id="chartPayment"></canvas></article>
+      <article class="card glass"><div class="card-head"><div><span>Clientes</span><h3>Top faturamento</h3></div></div><canvas id="chartClients"></canvas></article>
+      <article class="card glass"><div class="card-head"><div><span>Fornecedores</span><h3>Top compras de insumos</h3></div></div><canvas id="chartSuppliers"></canvas></article>
+      <article class="card glass"><div class="card-head"><div><span>Equipe</span><h3>Receita por mecânico</h3></div></div><canvas id="chartMechanics"></canvas></article>
+    </section>
+
+    <section class="rankings" id="rankings">
+      <article class="table-card glass">
+        <div class="card-head"><div><span>Serviços e insumos</span><h3>Ranking por descrição</h3></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Descrição</th><th>Fluxo</th><th>Receita</th><th>Insumos</th><th>Resultado</th><th>Registros</th></tr></thead><tbody id="rankingRows"></tbody></table></div>
+      </article>
+      <article class="table-card glass compact">
+        <div class="card-head"><div><span>Clientes</span><h3>Maiores clientes</h3></div></div>
+        <div id="clientList" class="list-rank"></div>
+      </article>
+    </section>
+
+    <section class="details glass" id="detalhes">
+      <div class="card-head"><div><span>Base detalhada</span><h3>Registros filtrados</h3></div><em id="rowCounter">0 linhas</em></div>
+      <div class="table-wrap"><table><thead><tr><th>Data</th><th>Tipo</th><th>Área</th><th>Forma</th><th>Cliente</th><th>Descrição</th><th>OS</th><th>Receita</th><th>Insumos</th><th>Fornecedor/Mecânico</th></tr></thead><tbody id="detailRows"></tbody></table></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="dashboard-auth.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
